@@ -32,7 +32,7 @@
           "error",
           {
             "type": "element",
-            "prefix": "solana-bootcamp",
+            "prefix": "sb",
             "style": "kebab-case"
           }
         ]
