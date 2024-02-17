@@ -17,11 +17,11 @@ import { HeaderComponent } from './components/header.component';
   `,
   styles: `
       :host {
-      background-color: black;
+        @apply text-green-500 font-mono bg-black border-green-500 border-4 rounded p-4 space-y-4;
+     
       height: 100%;
       width: 100%;
       display: block;
-      color: white; 
     }
   `,
 })
