@@ -10,13 +10,20 @@ import {
   Transaction,
 } from '../services/shyft.service';
 import { ConnectionStore, WalletStore } from '@heavy-duty/wallet-adapter';
+import { TransferFormComponent } from '../components/transferForm.component';
 
 @Component({
   standalone: true,
-  imports: [RouterModule, BalanceComponent, TransactionsComponent],
+  imports: [
+    RouterModule,
+    BalanceComponent,
+    TransactionsComponent,
+    TransferFormComponent,
+  ],
   selector: 'sb-balance-page',
   template: ` <div class="flex flex-col space-y-5 p-10">
     <sb-balance [tokenBalance$]="tokenBalance$"></sb-balance>
+    <sb-transfer-form></sb-transfer-form>
     <sb-transactions [transactions$]="transactions$"></sb-transactions>
   </div>`,
 })
