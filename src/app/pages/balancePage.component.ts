@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { BalanceComponent } from '../components/balance.component';
 import { TransactionsComponent } from '../components/transactions.component';
@@ -9,7 +9,7 @@ import {
   TokenBalance,
   Transaction,
 } from '../services/shyft.service';
-import { WalletStore } from '@heavy-duty/wallet-adapter';
+import { ConnectionStore, WalletStore } from '@heavy-duty/wallet-adapter';
 
 @Component({
   standalone: true,
@@ -20,9 +20,15 @@ import { WalletStore } from '@heavy-duty/wallet-adapter';
     <sb-transactions [transactions$]="transactions$"></sb-transactions>
   </div>`,
 })
-export class BalancePageComponent {
+export class BalancePageComponent implements OnInit {
   private shyftService = inject(ShyftService);
   private walletStore = inject(WalletStore);
+  private connectionStore = inject(ConnectionStore);
+
+  ngOnInit() {
+    // set the RPC endpoint
+    this.connectionStore.setEndpoint(this.shyftService.getRpcEndpoint());
+  }
 
   public tokenBalance$: Observable<TokenBalance | undefined> =
     this.walletStore.publicKey$.pipe(
