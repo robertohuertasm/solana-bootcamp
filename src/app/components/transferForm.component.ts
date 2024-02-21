@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
+import { format } from 'path';
 
 export type TransferFormModel = { email?: string };
 
@@ -20,7 +21,8 @@ export type TransferFormModel = { email?: string };
     MatInput,
   ],
   template: `
-    <form #form="ngForm">
+    <h2 class="text-1xl font-bold">Transfer</h2>
+    <form #form="ngForm" (ngSubmit)="onSubmit(form)">
       <mat-form-field appearance="fill">
         <mat-label>Email</mat-label>
         <input
@@ -41,9 +43,28 @@ export type TransferFormModel = { email?: string };
         <mat-hint>We will send you information to your email account.</mat-hint>
         }
       </mat-form-field>
+      <button
+        type="submit"
+        mat-raised-button
+        color="primary"
+        [disabled]="form.invalid"
+      >
+        Submit
+      </button>
     </form>
   `,
 })
 export class TransferFormComponent {
+  @Output() public readonly submitForm = new EventEmitter<
+    Required<TransferFormModel>
+  >();
   public model: TransferFormModel = { email: undefined };
+
+  public onSubmit(form: NgForm) {
+    if (form.invalid || !this.model.email) {
+      console.error('form is invalid');
+    } else {
+      this.submitForm.emit(this.model as Required<TransferFormModel>);
+    }
+  }
 }

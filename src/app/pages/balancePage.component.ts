@@ -22,8 +22,8 @@ import { TransferFormComponent } from '../components/transferForm.component';
   ],
   selector: 'sb-balance-page',
   template: ` <div class="flex flex-col space-y-5 p-10">
-    <sb-balance [tokenBalance$]="tokenBalance$"></sb-balance>
     <sb-transfer-form></sb-transfer-form>
+    <sb-balance [tokenBalance$]="tokenBalance$"></sb-balance>
     <sb-transactions [transactions$]="transactions$"></sb-transactions>
   </div>`,
 })
