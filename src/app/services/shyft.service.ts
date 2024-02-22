@@ -40,12 +40,11 @@ type Response<T> = { result: T };
 })
 export class ShyftService {
   private apiKey = '0tSbU8CBJArXjfwH';
-
   private httpClient = inject(HttpClient);
   private headers = { 'x-api-key': this.apiKey, redirect: 'follow' };
   private token = '7EYnhQoR9YM3N7UoaKRoA44Uy8JeaZV3qyouov87awMs'; // sily dragon
   // private token = 'So11111111111111111111111111111111111111112'; // wrapped sol
-  private network: 'devnet' | 'testnet' | 'mainnet-beta' = 'mainnet-beta';
+  public network = 'mainnet-beta';
 
   public getRpcEndpoint(): string {
     return `https://rpc.shyft.to?api_key=${this.apiKey}`;
