@@ -5,7 +5,6 @@ import { MatButton } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
-import { format } from 'path';
 
 export type TransferFormModel = { email?: string };
 
