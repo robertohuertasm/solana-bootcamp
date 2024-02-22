@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { BalanceComponent } from '../components/balance.component';
 import { TransactionsComponent } from '../components/transactions.component';
@@ -9,41 +9,29 @@ import {
   TokenBalance,
   Transaction,
 } from '../services/shyft.service';
-import { ConnectionStore, WalletStore } from '@heavy-duty/wallet-adapter';
+import { WalletStore } from '@heavy-duty/wallet-adapter';
 import { TransferFormComponent } from '../components/transferForm.component';
-import { MatDialog } from '@angular/material/dialog';
-import { TransferModalComponent } from '../components/transferModal.component';
+
+import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
   imports: [
     RouterModule,
+    CommonModule,
     BalanceComponent,
     TransactionsComponent,
     TransferFormComponent,
   ],
   selector: 'sb-balance-page',
   template: ` <div class="flex flex-col space-y-5 p-10">
-    <button (click)="onOpenModal()">Transfer</button>
-    <sb-transfer-form></sb-transfer-form>
     <sb-balance [tokenBalance$]="tokenBalance$"></sb-balance>
     <sb-transactions [transactions$]="transactions$"></sb-transactions>
   </div>`,
 })
-export class BalancePageComponent implements OnInit {
+export class BalancePageComponent {
   private shyftService = inject(ShyftService);
-  private walletStore = inject(WalletStore);
-  private connectionStore = inject(ConnectionStore);
-  private transferDialog = inject(MatDialog);
-
-  ngOnInit() {
-    // set the RPC endpoint
-    this.connectionStore.setEndpoint(this.shyftService.getRpcEndpoint());
-  }
-
-  public onOpenModal(): void {
-    this.transferDialog.open(TransferModalComponent);
-  }
+  public walletStore = inject(WalletStore);
 
   public tokenBalance$: Observable<TokenBalance | undefined> =
     this.walletStore.publicKey$.pipe(
