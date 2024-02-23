@@ -10,7 +10,6 @@ import {
   Transaction,
 } from '../services/shyft.service';
 import { WalletStore, ConnectionStore } from '@heavy-duty/wallet-adapter';
-import { TransferFormComponent } from '../components/transferForm.component';
 import { PublicKey } from '@solana/web3.js';
 import { CommonModule } from '@angular/common';
 
@@ -21,7 +20,6 @@ import { CommonModule } from '@angular/common';
     CommonModule,
     BalanceComponent,
     TransactionsComponent,
-    TransferFormComponent,
   ],
   selector: 'sb-balance-page',
   template: ` <select

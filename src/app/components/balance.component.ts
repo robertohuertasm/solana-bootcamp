@@ -40,7 +40,7 @@ export class BalanceComponent {
   public onOpenModal(): void {
     const ref = this.transferDialog.open(TransferModalComponent, {
       width: '50%',
-      height: '50%',
+
       disableClose: true,
     });
     ref.afterClosed().subscribe((result: boolean) => {

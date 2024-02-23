@@ -1,12 +1,17 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
+import { format } from 'path';
 
-export type TransferFormModel = { email?: string };
+export type TransferFormModel = {
+  receiver?: string;
+  amount?: number;
+  memo?: string;
+};
 
 @Component({
   selector: 'sb-transfer-form',
@@ -20,50 +25,116 @@ export type TransferFormModel = { email?: string };
     MatInput,
   ],
   template: `
-    <h2 class="text-1xl font-bold">Transfer</h2>
-    <form #form="ngForm" (ngSubmit)="onSubmit(form)">
-      <mat-form-field appearance="fill">
-        <mat-label>Email</mat-label>
-        <input
-          matInput
-          [(ngModel)]="model.email"
-          required
-          #emailControl="ngModel"
-          name="email"
-          type="email"
-          #recipient="ngModel"
-        />
-        <mat-icon matSuffix>email</mat-icon>
-        @if (form.submitted && emailControl.errors) {
-        <mat-error>
-          @if(emailControl.errors['required']) { Email is required }
-        </mat-error>
-        } @else {
-        <mat-hint>We will send you information to your email account.</mat-hint>
-        }
-      </mat-form-field>
+    <form
+      class="w-full max-w-lg"
+      #form="ngForm"
+      (ngSubmit)="onSubmit(form)"
+      disabled
+    >
+      <div class="flex flex-wrap -mx-3 mb-6">
+        <div class="w-full px-3  ">
+          <label class="label" for="amount"> Receiver <sup>*</sup> </label>
+          <input
+            class="console-big focus:outline-none focus:shadow-outline"
+            id="receiver"
+            type="text"
+            [(ngModel)]="model.receiver"
+            [disabled]="isInTransfer"
+            name="receiver"
+          />
+        </div>
+      </div>
+      <div class="flex flex-wrap -mx-3 mb-6">
+        <div class="w-full px-3 md:w-1/2 ">
+          <label class="label" for="amount"> Amount <sup>*</sup> </label>
+          <input
+            class="console-big focus:outline-none focus:shadow-outline"
+            id="amount"
+            type="number"
+            [(ngModel)]="model.amount"
+            [disabled]="isInTransfer"
+            name="amount"
+          />
+        </div>
+      </div>
+
+      <div class="flex flex-wrap -mx-3 mb-6">
+        <div class="w-full px-3">
+          <label class="label" for="memo"> Message </label>
+          <input
+            class="console-big focus:outline-none focus:shadow-outline"
+            id="memo"
+            type="text"
+            [(ngModel)]="model.memo"
+            [disabled]="isInTransfer"
+            name="memo"
+          />
+          <p class="text-green-600 text-xs italic">
+            Attach a message to the transaction
+          </p>
+        </div>
+      </div>
+
+      @if (isInTransfer) {
+      <p class="text-green-600 text-xl font-bold">Tranfer in progress...</p>
+      } @else { @if(isValid()) {
       <button
         type="submit"
-        mat-raised-button
-        color="primary"
-        [disabled]="form.invalid"
+        class="font-semibold hover:bg-emerald-500 hover:text-black px-4"
+        [disabled]="form.invalid || isInTransfer"
       >
-        Submit
+        Transfer!
       </button>
+      }
+
+      <button
+        type="button"
+        class="font-semibold hover:bg-emerald-500 hover:text-black px-4"
+        (click)="onCancel()"
+        [disabled]="isInTransfer"
+      >
+        Cancel
+      </button>
+      }
     </form>
+  `,
+  styles: `
+    .console {
+      @apply bg-black border border-green-400 hover:border-green-500 px-2 py-2 pr-8 shadow leading-tight ;
+    }
+
+    .console-big {
+      @apply bg-black border border-green-400 hover:border-green-500 appearance-none block w-full py-3 px-4 mb-3 leading-tight;
+    }
+
+    .label {
+      @apply block uppercase tracking-wide text-green-700 text-xs font-bold mb-2;
+    }
   `,
 })
 export class TransferFormComponent {
+  @Input() public isInTransfer = false;
   @Output() public readonly submitForm = new EventEmitter<
     Required<TransferFormModel>
   >();
-  public model: TransferFormModel = { email: undefined };
+  @Output() public readonly cancel = new EventEmitter<void>();
+
+  public model: TransferFormModel = {};
+
+  public isValid() {
+    return this.model.receiver && this.model.amount;
+  }
 
   public onSubmit(form: NgForm) {
-    if (form.invalid || !this.model.email) {
+    if (form.invalid || !this.isValid()) {
       console.error('form is invalid');
+      // TODO: (ROB) validate form
     } else {
       this.submitForm.emit(this.model as Required<TransferFormModel>);
     }
+  }
+
+  public onCancel() {
+    this.cancel.emit();
   }
 }
