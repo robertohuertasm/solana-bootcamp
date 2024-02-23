@@ -43,10 +43,5 @@ export class BalanceComponent {
 
       disableClose: true,
     });
-    ref.afterClosed().subscribe((result: boolean) => {
-      if (result) {
-        console.log('Transfer result:', result);
-      }
-    });
   }
 }

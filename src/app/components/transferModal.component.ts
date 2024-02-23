@@ -8,6 +8,7 @@ import {
 } from '@heavy-duty/wallet-adapter';
 import { createTransferInstructions } from '@heavy-duty/spl-utils';
 import {
+  Result,
   TransferFormComponent,
   TransferFormModel,
 } from './transferForm.component';
@@ -20,9 +21,10 @@ import { ShyftService } from '../services/shyft.service';
   template: `
     <div class="bg-black border-4 border-green-500 p-10 text-green-500">
       <sb-transfer-form
-        (cancel)="onClose()"
+        (cancel)="onClose(result)"
         (submitForm)="onTransfer($event)"
         [isInTransfer]="isInTransfer"
+        [result]="result"
       ></sb-transfer-form>
     </div>
   `,
@@ -34,10 +36,12 @@ export class TransferModalComponent {
     injectTransactionSender();
 
   public isInTransfer = false;
+  public result: Result;
 
   public onTransfer(data: Required<TransferFormModel>): void {
     if (this.isInTransfer) return;
     this.isInTransfer = true;
+    this.result = undefined;
 
     this.transactionSender
       .send(({ publicKey }) => {
@@ -58,17 +62,18 @@ export class TransferModalComponent {
         error: (e) => {
           this.isInTransfer = false;
           console.error(e);
+          this.result = 'ko';
         },
         complete: () => {
           this.isInTransfer = false;
           console.log('Transaction completed');
-          this.onClose();
+          this.result = 'ok';
         },
       });
   }
 
-  public onClose(): void {
+  public onClose(result: Result): void {
     if (this.isInTransfer) return;
-    this.matDialogRef.close('output value');
+    this.matDialogRef.close(result);
   }
 }

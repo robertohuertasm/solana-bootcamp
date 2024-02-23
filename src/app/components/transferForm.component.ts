@@ -13,6 +13,8 @@ export type TransferFormModel = {
   memo?: string;
 };
 
+export type Result = 'ok' | 'ko' | undefined;
+
 @Component({
   selector: 'sb-transfer-form',
   standalone: true,
@@ -77,7 +79,11 @@ export type TransferFormModel = {
 
       @if (isInTransfer) {
       <p class="text-green-600 text-xl font-bold">Tranfer in progress...</p>
-      } @else { @if(isValid()) {
+      } @else { @if(form.invalid || !isValid()) {
+      <p class="text-green-200 text-xs italic pb-5">
+        The form is not valid. Please fill the required forms
+      </p>
+      } @if(isValid()) {
       <button
         type="submit"
         class="font-semibold hover:bg-emerald-500 hover:text-black px-4"
@@ -95,7 +101,13 @@ export type TransferFormModel = {
       >
         Cancel
       </button>
-      }
+      } @switch (result) { @case ('ok') {
+      <p class="text-green-200 text-xs italic pb-5">
+        The transference has been successful.
+      </p>
+      } @case ('ko') {
+      <p class="text-green-200 text-xl italic pt-5">Some error occurred!</p>
+      } @default { } }
     </form>
   `,
   styles: `
@@ -114,6 +126,7 @@ export type TransferFormModel = {
 })
 export class TransferFormComponent {
   @Input() public isInTransfer = false;
+  @Input() public result: Result;
   @Output() public readonly submitForm = new EventEmitter<
     Required<TransferFormModel>
   >();
