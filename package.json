@@ -8,6 +8,10 @@
     "test": "nx test"
   },
   "private": true,
+  "browser": {
+    "crypto": "crypto-browserify",
+    "stream": "stream-browserify"
+  },
   "dependencies": {
     "@angular/animations": "~17.1.0",
     "@angular/cdk": "~17.1.2",
@@ -58,6 +62,7 @@
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
     "autoprefixer": "^10.4.17",
+    "crypto-browserify": "^3.12.0",
     "cypress": "^13.0.0",
     "eslint": "~8.48.0",
     "eslint-config-prettier": "^9.0.0",
@@ -69,6 +74,7 @@
     "nx": "18.0.2",
     "postcss": "^8.4.34",
     "prettier": "^2.6.2",
+    "stream-browserify": "^3.0.0",
     "tailwindcss": "^3.4.1",
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.1",
