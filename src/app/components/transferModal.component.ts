@@ -13,6 +13,7 @@ import {
   TransferFormModel,
 } from './transferForm.component';
 import { ShyftService } from '../services/shyft.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'sb-transfer-modal',
@@ -21,10 +22,10 @@ import { ShyftService } from '../services/shyft.service';
   template: `
     <div class="bg-black border-4 border-green-500 p-10 text-green-500">
       <sb-transfer-form
-        (cancel)="onClose(result)"
+        (cancel)="onClose()"
         (submitForm)="onTransfer($event)"
         [isInTransfer]="isInTransfer"
-        [result]="result"
+        [result$]="result$"
       ></sb-transfer-form>
     </div>
   `,
@@ -36,12 +37,12 @@ export class TransferModalComponent {
     injectTransactionSender();
 
   public isInTransfer = false;
-  public result: Result;
+  public readonly result$ = new BehaviorSubject<Result>(undefined);
 
   public onTransfer(data: Required<TransferFormModel>): void {
     if (this.isInTransfer) return;
     this.isInTransfer = true;
-    this.result = undefined;
+    this.result$.next(undefined);
 
     this.transactionSender
       .send(({ publicKey }) => {
@@ -49,7 +50,7 @@ export class TransferModalComponent {
           senderAddress: publicKey.toBase58(),
           receiverAddress: data.receiver,
           mintAddress: this.shyftService.token,
-          amount: data.amount,
+          amount: data.amount * 10 ** this.shyftService.tokenDecimals,
           memo: data.memo,
           fundReceiver: true,
         });
@@ -62,18 +63,18 @@ export class TransferModalComponent {
         error: (e) => {
           this.isInTransfer = false;
           console.error(e);
-          this.result = 'ko';
+          this.result$.next('ko');
         },
         complete: () => {
           this.isInTransfer = false;
-          console.log('Transaction completed');
-          this.result = 'ok';
+          this.result$.next('ok');
+          this.onClose();
         },
       });
   }
 
-  public onClose(result: Result): void {
+  public onClose(): void {
     if (this.isInTransfer) return;
-    this.matDialogRef.close(result);
+    this.matDialogRef.close(this.result$.value);
   }
 }

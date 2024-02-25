@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
@@ -6,6 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { format } from 'path';
+import { Observable, Subscription } from 'rxjs';
 
 export type TransferFormModel = {
   receiver?: string;
@@ -89,7 +97,7 @@ export type Result = 'ok' | 'ko' | undefined;
         class="font-semibold hover:bg-emerald-500 hover:text-black px-4"
         [disabled]="form.invalid || isInTransfer"
       >
-        Transfer!
+        Transfer
       </button>
       }
 
@@ -101,7 +109,7 @@ export type Result = 'ok' | 'ko' | undefined;
       >
         Cancel
       </button>
-      } @switch (result) { @case ('ok') {
+      } @switch (result$ | async) { @case ('ok') {
       <p class="text-green-200 text-xs italic pb-5">
         The transference has been successful.
       </p>
@@ -124,15 +132,29 @@ export type Result = 'ok' | 'ko' | undefined;
     }
   `,
 })
-export class TransferFormComponent {
+export class TransferFormComponent implements OnInit, OnDestroy {
   @Input() public isInTransfer = false;
-  @Input() public result: Result;
+  @Input({ required: true }) public result$!: Observable<Result>;
   @Output() public readonly submitForm = new EventEmitter<
     Required<TransferFormModel>
   >();
   @Output() public readonly cancel = new EventEmitter<void>();
 
   public model: TransferFormModel = {};
+
+  private resultSubscription: Subscription | undefined;
+
+  public ngOnInit(): void {
+    this.resultSubscription = this.result$.subscribe((result) => {
+      if (result === 'ok') {
+        this.model = {};
+      }
+    });
+  }
+
+  public ngOnDestroy() {
+    this.resultSubscription?.unsubscribe();
+  }
 
   public isValid() {
     return this.model.receiver && this.model.amount;

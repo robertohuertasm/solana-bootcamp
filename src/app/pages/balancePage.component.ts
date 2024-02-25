@@ -33,7 +33,10 @@ import { CommonModule } from '@angular/common';
       }
     </select>
     <div class="flex flex-col space-y-5 p-10">
-      <sb-balance [tokenBalance$]="tokenBalance$"></sb-balance>
+      <sb-balance
+        [tokenBalance$]="tokenBalance$"
+        (transferOk)="onTransferOk()"
+      ></sb-balance>
       <sb-transactions [transactions$]="transactions$"></sb-transactions>
     </div>`,
 })
@@ -49,10 +52,14 @@ export class BalancePageComponent implements OnInit {
     switchMap(() => this.walletStore.publicKey$)
   );
 
+  private resultOk$ = new BehaviorSubject<number>(0);
+
   private serviceOp<T = unknown>(
     op: (publicKey: PublicKey | null) => Observable<T>
   ): Observable<T> {
-    return this.publicKey$.pipe(switchMap(op));
+    return this.resultOk$.pipe(
+      switchMap(() => this.publicKey$.pipe(switchMap(op)))
+    );
   }
 
   public ngOnInit() {
@@ -65,6 +72,11 @@ export class BalancePageComponent implements OnInit {
     const target = e.target as HTMLSelectElement;
     this.shyftService.network = target.value;
     this.selectedNetwork$.next(target.value);
+  }
+
+  public onTransferOk() {
+    console.log('transfer ok');
+    this.resultOk$.next(this.resultOk$.value + 1);
   }
 
   public tokenBalance$: Observable<TokenBalance | undefined> = this.serviceOp(

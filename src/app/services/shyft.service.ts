@@ -42,6 +42,7 @@ export class ShyftService {
   private apiKey = '0tSbU8CBJArXjfwH';
   private httpClient = inject(HttpClient);
   private headers = { 'x-api-key': this.apiKey, redirect: 'follow' };
+  public readonly tokenDecimals = 9;
   public readonly token = '7EYnhQoR9YM3N7UoaKRoA44Uy8JeaZV3qyouov87awMs'; // sily dragon
   // public readonly token = 'So11111111111111111111111111111111111111112'; // wrapped sol
   public network = 'mainnet-beta';

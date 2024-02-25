@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TokenBalance } from '../services/shyft.service';
 import { CommonModule } from '@angular/common';
@@ -37,11 +37,19 @@ export class BalanceComponent {
     TokenBalance | undefined
   >;
 
+  @Output() transferOk = new EventEmitter<void>();
+
   public onOpenModal(): void {
     const ref = this.transferDialog.open(TransferModalComponent, {
       width: '50%',
 
       disableClose: true,
+    });
+
+    ref.afterClosed().subscribe((result) => {
+      if (result === 'ok') {
+        this.transferOk.emit();
+      }
     });
   }
 }
